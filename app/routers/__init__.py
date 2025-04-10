@@ -1,4 +1,3 @@
-# /app/routers/__init__.py
 from .auth import router as auth
 from .aluno import router as aluno
 from .aula import router as aula

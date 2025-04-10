@@ -21,11 +21,9 @@ def listar_aulas(request: Request, db: Session = Depends(get_db), user: dict = D
     cursos = db.query(CursoModel).all()
     alunos = db.query(AlunoModel).all()
     
-    # Para cada aula, buscar os alunos associados
     for aula in aulas:
         aula.alunos = []
         for aluno in alunos:
-            # Verificar se o aluno está associado à aula
             resultado = db.execute(
                 aluno_aula.select().where(
                     aluno_aula.c.aula_id == aula.id,
@@ -52,12 +50,10 @@ async def adicionar_aula(
     db: Session = Depends(get_db),
     user: dict = Depends(get_current_user)
 ):
-    # Converte a data do formato DD/MM/YYYY para YYYY-MM-DD
     try:
         data_obj = datetime.strptime(data, "%d/%m/%Y")
         data_formatada = data_obj.strftime("%Y-%m-%d")
     except ValueError:
-        # Se falhar, tenta o formato YYYY-MM-DD
         data_obj = datetime.strptime(data, "%Y-%m-%d")
         data_formatada = data
 
@@ -71,7 +67,6 @@ async def adicionar_aula(
     db.add(nova_aula)
     db.commit()
     
-    # Associar alunos à aula
     if aluno_ids:
         for aluno_id in aluno_ids:
             db.execute(
@@ -96,12 +91,10 @@ async def editar_aula(
     db: Session = Depends(get_db),
     user: dict = Depends(get_current_user)
 ):
-    # Converte a data do formato DD/MM/YYYY para YYYY-MM-DD
     try:
         data_obj = datetime.strptime(data, "%d/%m/%Y")
         data_formatada = data_obj.strftime("%Y-%m-%d")
     except ValueError:
-        # Se falhar, tenta o formato YYYY-MM-DD
         data_obj = datetime.strptime(data, "%Y-%m-%d")
         data_formatada = data
 
@@ -118,12 +111,10 @@ async def editar_aula(
         aula.duracao = aula_data.duracao
         aula.curso_id = aula_data.curso_id
         
-        # Remover todas as associações existentes
         db.execute(
             aluno_aula.delete().where(aluno_aula.c.aula_id == aula_id)
         )
         
-        # Adicionar novas associações
         if aluno_ids:
             for aluno_id in aluno_ids:
                 db.execute(
@@ -141,7 +132,6 @@ async def editar_aula(
 async def deletar_aula(aula_id: int, db: Session = Depends(get_db), user: dict = Depends(get_current_user)):
     aula = db.query(AulaModel).get(aula_id)
     if aula:
-        # Remover todas as associações com alunos
         db.execute(
             aluno_aula.delete().where(aluno_aula.c.aula_id == aula_id)
         )

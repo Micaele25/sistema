@@ -62,7 +62,6 @@ async def cadastrar(
 ):
     logger.info(f"Tentativa de cadastro - Email: {email}")
     
-    # Verifica se as senhas conferem
     if senha != confirm_senha:
         logger.error("Senhas não conferem")
         return templates.TemplateResponse(
@@ -70,7 +69,6 @@ async def cadastrar(
             {"request": request, "error": "As senhas não conferem"}
         )
     
-    # Verifica se o usuário já existe
     if db.query(Usuario).filter(Usuario.email == email).first():
         logger.error("Email já cadastrado")
         return templates.TemplateResponse(
@@ -79,12 +77,11 @@ async def cadastrar(
         )
     
     try:
-        # Cria o novo usuário
         hashed_password = pwd_context.hash(senha)
         novo_usuario = Usuario(
             email=email,
             senha=hashed_password,
-            nome=email.split('@')[0]  # Usa a parte local do email como nome padrão
+            nome=email.split('@')[0]  
         )
         
         db.add(novo_usuario)

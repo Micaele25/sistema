@@ -8,5 +8,4 @@ class Curso(Base):
     nome = Column(String, index=True)
     descricao = Column(String)
     
-    # Relacionamento com o modelo Aula
     aulas = relationship("Aula", back_populates="curso")

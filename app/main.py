@@ -9,10 +9,8 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
-# Monta os arquivos estáticos
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
-# Inclui os routers
 app.include_router(auth)
 app.include_router(curso)
 app.include_router(aluno)

@@ -7,8 +7,7 @@ class Aula(Base):
     id = Column(Integer, primary_key=True, index=True)
     titulo = Column(String, index=True)
     data = Column(Date)
-    duracao = Column(Integer)  # Em minutos
+    duracao = Column(Integer) 
     curso_id = Column(Integer, ForeignKey("cursos.id"))
     
-    # Relacionamento com o modelo Curso
     curso = relationship("Curso", back_populates="aulas")

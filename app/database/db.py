@@ -6,7 +6,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Configuração do banco de dados
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:micaele12@db:5432/educacao")
 
 engine = create_engine(DATABASE_URL)

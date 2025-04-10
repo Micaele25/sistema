@@ -48,12 +48,10 @@ def editar_curso(
 def deletar_curso(curso_id: int, db: Session = Depends(get_db), user: dict = Depends(get_current_user)):
     curso = db.query(CursoModel).get(curso_id)
     if curso:
-        # Primeiro, atualiza os alunos vinculados a este curso
         alunos = db.query(AlunoModel).filter(AlunoModel.curso_id == curso_id).all()
         for aluno in alunos:
             aluno.curso_id = None
         
-        # Agora pode deletar o curso com segurança
         db.delete(curso)
         db.commit()
     return RedirectResponse("/cursos", status_code=303)

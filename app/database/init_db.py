@@ -12,10 +12,8 @@ logger = logging.getLogger(__name__)
 def reset_sequence(db, table_name, start_value=1):
     """Reset a sequence to start from a specific value."""
     try:
-        # Primeiro, encontra o nome da sequência
         sequence_name = f"{table_name}_id_seq"
         
-        # Reset a sequência
         sql = text(f"ALTER SEQUENCE {sequence_name} RESTART WITH {start_value}")
         db.execute(sql)
         db.commit()
@@ -26,7 +24,6 @@ def reset_sequence(db, table_name, start_value=1):
 
 def init_db():
     try:
-        # Cria todas as tabelas se não existirem
         Base.metadata.create_all(bind=engine)
         logger.info("Banco de dados inicializado com sucesso!")
     except Exception as e:

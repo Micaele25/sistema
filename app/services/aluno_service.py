@@ -6,20 +6,16 @@ from app.models.aluno_aula import aluno_aula
 from sqlalchemy.sql import func
 
 def listar_alunos_com_horas(db: Session):
-    # Buscar todos os alunos
-    alunos = db.query(AlunoModel).all()
+    alunos = db.query(
+        AlunoModel,
+        CursoModel.nome.label('curso_nome')
+    ).outerjoin(
+        CursoModel,
+        AlunoModel.curso_id == CursoModel.id
+    ).all()
     
-    # Para cada aluno, calcular o total de horas
     relatorio = []
-    for aluno in alunos:
-        # Buscar o curso do aluno
-        curso_nome = "Sem curso"
-        if aluno.curso_id is not None:
-            curso = db.query(CursoModel).get(aluno.curso_id)
-            if curso:
-                curso_nome = curso.nome
-        
-        # Calcular o total de horas do aluno
+    for aluno, curso_nome in alunos:
         resultado = db.query(func.sum(AulaModel.duracao).label("total_horas"))\
             .join(aluno_aula, AulaModel.id == aluno_aula.c.aula_id)\
             .filter(aluno_aula.c.aluno_id == aluno.id)\
@@ -31,7 +27,7 @@ def listar_alunos_com_horas(db: Session):
             "aluno_id": aluno.id,
             "aluno_nome": aluno.nome,
             "aluno_email": aluno.email,
-            "curso_nome": curso_nome,
+            "curso_nome": curso_nome if curso_nome else "Sem curso",
             "total_horas": total_horas
         })
     
