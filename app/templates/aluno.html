@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gerenciamento de Alunos - Edutec</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"/>
+  <link rel="stylesheet" href="/static/css/styles.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Barra de navegação -->
+  <div class="navbar">
+    <img src="/static/img/logo.png" alt="Logo" width="200px">
+    <div>
+      <a href="/cursos" class="btn btn-outline-primary me-2">
+        <i class="bi bi-book me-1"></i>Cursos
+      </a>
+      <a href="/alunos" class="btn btn-outline-primary me-2">
+        <i class="bi bi-person me-1"></i>Alunos
+      </a>
+      <a href="/aulas" class="btn btn-outline-primary me-2">
+        <i class="bi bi-chalkboard me-1"></i>Aulas
+      </a>
+      <form action="/logout" method="post" style="display: inline;">
+        <button type="submit" class="btn btn-primary">
+          Sair <i class="bi bi-box-arrow-right ms-2"></i>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div class="container my-5">
+    <!-- Cabeçalho da página -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="mb-0"><i class="bi bi-person me-2"></i>Gerenciamento de Alunos</h2>
+      <a href="/index.html" class="btn btn-outline-secondary">
+        <i class="bi bi-house-door me-1"></i>Voltar para Início
+      </a>
+    </div>
+
+    <!-- Card de Adição de Aluno -->
+    <div class="card p-4 shadow-sm mb-4">
+      <h3 class="text-center mb-4"><i class="bi bi-person-plus me-2"></i>Adicionar Novo Aluno</h3>
+      
+      <!-- Formulário de Adição -->
+      <form action="/alunos/adicionar" method="post" class="row g-3">
+        <div class="col-md-3">
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-person"></i></span>
+            <input type="text" name="nome" class="form-control" placeholder="Nome do Aluno" required />
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+            <input type="email" name="email" class="form-control" placeholder="E-mail do Aluno" required />
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-book"></i></span>
+            <select name="curso_id" class="form-control" required>
+              <option value="">Selecione um curso</option>
+              {% for curso in cursos %}
+                <option value="{{ curso.id }}">{{ curso.nome }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="col-md-2">
+          <button type="submit" class="btn btn-success w-100">
+            <i class="bi bi-plus-circle me-1"></i>Adicionar
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Card de Lista de Alunos -->
+    <div class="card p-4 shadow-sm mb-4">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3><i class="bi bi-people me-2"></i>Lista de Alunos</h3>
+        <div class="btn-group">
+          <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown">
+            <i class="bi bi-gear me-1"></i>Configurações
+          </button>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="/alunos/reset_id/1" onclick="return confirm('Isso irá resetar todos os IDs para começar do 1. Deseja continuar?')">
+              <i class="bi bi-arrow-clockwise me-1"></i>Resetar IDs para 1
+            </a></li>
+          </ul>
+        </div>
+      </div>
+      
+      <!-- Tabela de Alunos -->
+      <div class="table-responsive">
+        <table class="table table-striped align-middle text-center">
+          <thead class="table-primary">
+            <tr>
+              <th>ID</th>
+              <th>Nome</th>
+              <th>E-mail</th>
+              <th>Curso</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if alunos %}
+              {% for aluno in alunos %}
+                <tr>
+                  <form action="/alunos/editar/{{ aluno.id }}" method="post">
+                    <td>{{ aluno.id }}</td>
+                    <td><input type="text" name="nome" value="{{ aluno.nome }}" class="form-control" required /></td>
+                    <td><input type="email" name="email" value="{{ aluno.email }}" class="form-control" required /></td>
+                    <td>
+                      <select name="curso_id" class="form-control" required>
+                        {% for curso in cursos %}
+                          <option value="{{ curso.id }}" {% if curso.id == aluno.curso_id %}selected{% endif %}>
+                            {{ curso.nome }}
+                          </option>
+                        {% endfor %}
+                      </select>
+                    </td>
+                    <td class="d-flex justify-content-center gap-2">
+                      <button type="submit" class="btn btn-warning btn-sm">
+                        <i class="bi bi-pencil-square"></i> Editar
+                      </button>
+                  </form>
+                  <a href="/alunos/deletar/{{ aluno.id }}" class="btn btn-danger btn-sm" onclick="return confirm('Deseja excluir este aluno?')">
+                    <i class="bi bi-trash"></i> Excluir
+                  </a>
+                    </td>
+                </tr>
+              {% endfor %}
+            {% else %}
+              <tr>
+                <td colspan="5" class="text-muted py-3">
+                  <i class="bi bi-info-circle me-2"></i>Nenhum aluno cadastrado
+                </td>
+              </tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Card de Relatório de Horas -->
+    <div class="card p-4 shadow-sm">
+      <h3 class="text-center mb-4">
+        <i class="bi bi-clock-history me-2"></i>Relatório de Horas de Aula por Aluno
+      </h3>
+      <div class="table-responsive">
+        <table class="table table-bordered text-center align-middle table-horas">
+          <thead class="table-secondary">
+            <tr>
+              <th>ID</th>
+              <th>Nome</th>
+              <th>Email</th>
+              <th>Curso</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if relatorio %}
+              {% for item in relatorio %}
+                <tr>
+                  <td><span class="badge bg-primary">#{{ item.aluno_id }}</span></td>
+                  <td>{{ item.aluno_nome }}</td>
+                  <td>{{ item.aluno_email }}</td>
+                  <td>{{ item.curso_nome }}</td>
+                </tr>
+              {% endfor %}
+            {% else %}
+              <tr>
+                <td colspan="4" class="text-muted py-3">
+                  <i class="bi bi-info-circle me-2"></i>Nenhum aluno com horas registradas
+                </td>
+              </tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <footer class="bg-light py-4 mt-5">
+    <div class="container text-center">
+      <p class="mb-0">© 2025 Edutec - Sistema de Gestão Educacional</p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
